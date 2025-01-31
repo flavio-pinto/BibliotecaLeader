@@ -23,10 +23,23 @@ internal class UserInterface
                     _ => throw new ArgumentOutOfRangeException()
                 }));
 
-            if (actionChoice == MainMenuOptions.Exit)
+            switch (actionChoice)
             {
-                AnsiConsole.MarkupLine("[red]Uscita dal programma...[/]");
-                break;
+                case MainMenuOptions.Books:
+                    AnsiConsole.MarkupLine("[bold]📚 Gestione Libri[/]");
+                    break;
+
+                case MainMenuOptions.Users:
+                    AnsiConsole.MarkupLine("[bold]👥 Gestione Utenti[/]");
+                    break;
+
+                case MainMenuOptions.Loans:
+                    AnsiConsole.MarkupLine("[bold]🔄 Gestione Prestiti[/]");
+                    break;
+
+                case MainMenuOptions.Exit:
+                    AnsiConsole.MarkupLine("[red]Uscita dal programma...[/]");
+                    return;
             }
 
             AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
