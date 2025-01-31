@@ -1,7 +1,5 @@
 namespace BibliotecaLeader.Models;
 
-namespace BibliotecaLeader;
-
 internal class Book
 {
     private static int _nextId = 1;
