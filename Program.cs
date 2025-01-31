@@ -1,2 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using BibliotecaLeader;
+using Spectre.Console;
+
+UserInterface userInterface = new();
+userInterface.MainMenu();
