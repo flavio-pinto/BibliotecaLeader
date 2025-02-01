@@ -10,13 +10,17 @@ internal class UserInterface
 
     internal void MainMenu()
     {
+        
+
         while (true)
         {
             Console.Clear();
 
             var actionChoice = AnsiConsole.Prompt(
                 new SelectionPrompt<MainMenuOptions>()
-                .Title("Seleziona un'opzione:")
+                .Title("[yellow]Benvenuto nel gestionale della Biblioteca Leader![/]\n" +
+                    "[blue]Per una migliore esperienza consigliamo di allargare la finestra in full screen.[/]\n" +
+                    "[magenta]Seleziona un'opzione:[/]")
                 .AddChoices(Enum.GetValues<MainMenuOptions>())
                 .UseConverter(option => option switch
                 {
