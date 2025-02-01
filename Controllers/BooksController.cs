@@ -94,7 +94,35 @@ internal class BooksController
 
     internal void DeleteBook()
     {
-        AnsiConsole.MarkupLine("[bold]🗑️ Elimina Libro[/]");
+        var bookId = AnsiConsole.Ask<string>("Inserisci l'ID del libro da eliminare:");
+
+        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == bookId);
+
+        if (book == null)
+        {
+            AnsiConsole.MarkupLine("[red]Errore: Nessun libro trovato con questo ID.[/]");
+            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+            Console.ReadKey(true);
+            return;
+        }
+
+        // Chiedere conferma prima di eliminare il libro
+        var confirm = AnsiConsole.Confirm($"Sei sicuro di voler eliminare il libro [bold]{book.Title}[/]?");
+
+        if (!confirm)
+        {
+            AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
+            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+            Console.ReadKey(true);
+            return;
+        }
+
+        // Rimuove il libro dalla lista
+        MockDatabase.Books.Remove(book);
+
+        AnsiConsole.MarkupLine("[green]📕 Libro eliminato con successo![/]");
+        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+        Console.ReadKey(true);
     }
 
     private Book GetBookData(Book? existingBook = null)
