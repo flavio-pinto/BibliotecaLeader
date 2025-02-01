@@ -28,12 +28,21 @@ internal class Enums
         Back
     }
 
-    internal enum UserMenuOption
+    internal enum UserMenuOptions
     {
         ViewUsers,
         AddUser,
         EditUser,
         DeleteUser,
+        Back
+    }
+
+    internal enum FilterUsersOptions
+    {
+        ShowAll,
+        FilterByName,
+        FilterByTaxCode,
+        FilterByEmail,
         Back
     }
 }

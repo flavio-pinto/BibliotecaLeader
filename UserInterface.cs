@@ -149,20 +149,58 @@ internal class UserInterface
             switch (userAction)
             {
                 case UserMenuOptions.ViewUsers:
+                    FilterUsersMenu();
+                    break;
+                case UserMenuOptions.AddUser:
                     Console.WriteLine("test");
                     break;
-                case UserMenuOptions.AddBook:
+                case UserMenuOptions.EditUser:
                     Console.WriteLine("test");
                     break;
-                case UserMenuOptions.EditBook:
-                    Console.WriteLine("test");
-                    break;
-                case UserMenuOptions.DeleteBook:
+                case UserMenuOptions.DeleteUser:
                     Console.WriteLine("test");
                     break;
                 case UserMenuOptions.Back:
                     return;
             }
+        }
+    }
+
+    private void FilterUsersMenu()
+    {
+        var filterUserAction = AnsiConsole.Prompt(
+            new SelectionPrompt<FilterUsersOptions>()
+            .Title("Scegli se vuoi mostrare tutti gli utenti o preferisci filtrarli:")
+            .AddChoices(Enum.GetValues<FilterUsersOptions>())
+            .UseConverter(option => option switch
+            {
+                FilterUsersOptions.ShowAll => "👥 Mostra Tutti",
+                FilterUsersOptions.FilterByName => "👤 Filtra per Nome e Cognome",
+                FilterUsersOptions.FilterByTaxCode => "🆔 Filtra per Codice Fiscale",
+                FilterUsersOptions.FilterByEmail => "📧 Filtra per Email", 
+                FilterUsersOptions.Back => "⬅️ Torna Indietro",
+                _ => throw new ArgumentOutOfRangeException()
+            }));
+
+        switch (filterUserAction)
+        {
+            case FilterUsersOptions.ShowAll:
+                _usersController.ViewUsers();
+                break;
+            case FilterUsersOptions.FilterByName:
+                string name = AnsiConsole.Ask<string>("Inserisci il nome e/o il cognome dell'utente:");
+                _usersController.ViewUsers("Name", name);
+                break;
+            case FilterUsersOptions.FilterByTaxCode:
+                string taxCode = AnsiConsole.Ask<string>("Inserisci il codice fiscale dell'utente:");
+                _usersController.ViewUsers("Tax Code", taxCode);
+                break;
+            case FilterUsersOptions.FilterByEmail:
+                string email = AnsiConsole.Ask<string>("Inserisci l'indirizzo email dell'utente:");
+                _usersController.ViewUsers("Email", email);
+                break;
+            case FilterUsersOptions.Back:
+                return;
         }
     }
 }
