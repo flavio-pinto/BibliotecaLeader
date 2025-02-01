@@ -18,4 +18,13 @@ internal class Enums
         DeleteBook,
         Back
     }
+
+    internal enum FilterBooksOptions
+    {
+        ShowAll,
+        FilterByAuthor,
+        FilterByTitle,
+        FilterByYear,
+        Back
+    }
 }

@@ -10,8 +10,6 @@ internal class UserInterface
 
     internal void MainMenu()
     {
-        
-
         while (true)
         {
             Console.Clear();
@@ -72,7 +70,7 @@ internal class UserInterface
             switch (bookAction)
             {
                 case BookMenuOptions.ViewBooks:
-                    _booksController.ViewBooks();
+                    FilterBooksMenu();
                     break;
                 case BookMenuOptions.AddBook:
                     _booksController.AddBook();
@@ -86,6 +84,44 @@ internal class UserInterface
                 case BookMenuOptions.Back:
                     return;
             }
+        }
+    }
+
+    private void FilterBooksMenu()
+    {
+        var filterBookAction = AnsiConsole.Prompt(
+            new SelectionPrompt<FilterBooksOptions>()
+            .Title("Scegli se vuoi mostrare tutti i libri o preferisci filtrarli:")
+            .AddChoices(Enum.GetValues<FilterBooksOptions>())
+            .UseConverter(option => option switch
+            {
+                FilterBooksOptions.ShowAll => "📖 Mostra Tutti",
+                FilterBooksOptions.FilterByAuthor => "👨 Filtra per Autore",
+                FilterBooksOptions.FilterByTitle => "📚 Filtra per Titolo",
+                FilterBooksOptions.FilterByYear => "📅 Filtra per Anno",
+                FilterBooksOptions.Back => "⬅️ Torna Indietro",
+                _ => throw new ArgumentOutOfRangeException()
+            }));
+
+        switch (filterBookAction)
+        {
+            case FilterBooksOptions.ShowAll:
+                _booksController.ViewBooks();
+                break;
+            case FilterBooksOptions.FilterByAuthor:
+                string author = AnsiConsole.Ask<string>("Inserisci il nome dell'autore:");
+                _booksController.ViewBooks("Author", author);
+                break;
+            case FilterBooksOptions.FilterByTitle:
+                string title = AnsiConsole.Ask<string>("Inserisci il titolo del libro:");
+                _booksController.ViewBooks("Title", title);
+                break;
+            case FilterBooksOptions.FilterByYear:
+                string year = AnsiConsole.Ask<string>("Inserisci l'anno di pubblicazione:");
+                _booksController.ViewBooks("Year", year);
+                break;
+            case FilterBooksOptions.Back:
+                return;
         }
     }
 }
