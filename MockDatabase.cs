@@ -6,16 +6,16 @@ internal static class MockDatabase
 {
     public static List<Book> Books = new()
     {
-        new Book("La Divina Commedia", 2000, "Dante Alighieri", "Mondadori Editore", "Thriller", "Italiano", 5, 4, "1st"),
-        new Book("Le Ge Son Fè", 2001, "Fiorita Fiorano", "Scaramuzzi Editore", "Commedia", "Francese", 6, 5, "2nd"),
-        new Book("Flowers for Nina", 2002, "Gennaro Carozzo", "Beilibri Editore", "Fantascienza", "Inglese", 7, 6, "3rd"),
-        new Book("Paperino e Pippo", 2003, "Walt Disney", "Disney Libri", "Avventura", "Italiano", 8, 7, "2nd"),
-        new Book("Neve d'Estate", 2000, "Sasà Salvaggio", "Scaramuzzi Editore", "Thriller", "Italiano", 9, 8, "5th"),
-        new Book("Cocco Bello", 2002, "Gennaro Carozzo", "Beilibri Editore", "Avventura", "Italiano", 10, 9, "1st"),
-        new Book("Fantozzi", 2001, "Dante Alighieri", "Scaramuzzi Editore", "Fantascienza", "Inglese", 11, 10, "7th"),
-        new Book("Bla Bla Bla", 2000, "Walt Disney", "Disney Libri", "Commedia", "Francese", 12, 11, "8th"),
-        new Book("Chi Chi Chi Co Co Co", 2007, "Sasà Salvaggio", "Beilibri Editore", "Commedia", "Italiano", 13, 12, "2nd"),
-        new Book("Il Libro della Sardegna", 2009, "Walt Disney", "Mondadori Editore", "Thriller", "Italiano", 14, 0, "1st")
+        new Book("La Divina Commedia", 2000, "Dante Alighieri", "Mondadori Editore", "Thriller", "Italiano", 5, 4, "1^"),
+        new Book("Le Ge Son Fè", 2001, "Fiorita Fiorano", "Scaramuzzi Editore", "Commedia", "Francese", 6, 5, "2^"),
+        new Book("Flowers for Nina", 2002, "Gennaro Carozzo", "Beilibri Editore", "Fantascienza", "Inglese", 7, 6, "3^"),
+        new Book("Paperino e Pippo", 2003, "Walt Disney", "Disney Libri", "Avventura", "Italiano", 8, 7, "2^"),
+        new Book("Neve d'Estate", 2000, "Sasà Salvaggio", "Scaramuzzi Editore", "Thriller", "Italiano", 9, 8, "5^"),
+        new Book("Cocco Bello", 2002, "Gennaro Carozzo", "Beilibri Editore", "Avventura", "Italiano", 10, 9, "1^"),
+        new Book("Fantozzi", 2001, "Dante Alighieri", "Scaramuzzi Editore", "Fantascienza", "Inglese", 11, 10, "7^"),
+        new Book("Bla Bla Bla", 2000, "Walt Disney", "Disney Libri", "Commedia", "Francese", 12, 11, "8^"),
+        new Book("Chi Chi Chi Co Co Co", 2007, "Sasà Salvaggio", "Beilibri Editore", "Commedia", "Italiano", 13, 12, "2^"),
+        new Book("Il Libro della Sardegna", 2009, "Walt Disney", "Mondadori Editore", "Thriller", "Italiano", 14, 0, "1^")
     };
 
     public static List<User> Users = new()
