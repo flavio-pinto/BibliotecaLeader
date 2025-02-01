@@ -166,11 +166,6 @@ internal class BooksController
             edition
         );
 
-        if (existingBook != null)
-        {
-            newBook.BookId = existingBook.BookId;
-        }
-
         return newBook;
     }
 

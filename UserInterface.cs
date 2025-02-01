@@ -152,10 +152,10 @@ internal class UserInterface
                     FilterUsersMenu();
                     break;
                 case UserMenuOptions.AddUser:
-                    Console.WriteLine("test");
+                    _usersController.AddUser();
                     break;
                 case UserMenuOptions.EditUser:
-                    Console.WriteLine("test");
+                    _usersController.EditUser();
                     break;
                 case UserMenuOptions.DeleteUser:
                     Console.WriteLine("test");
