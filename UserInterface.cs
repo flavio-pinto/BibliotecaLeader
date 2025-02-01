@@ -158,7 +158,7 @@ internal class UserInterface
                     _usersController.EditUser();
                     break;
                 case UserMenuOptions.DeleteUser:
-                    Console.WriteLine("test");
+                    _usersController.DeleteUser();
                     break;
                 case UserMenuOptions.Back:
                     return;

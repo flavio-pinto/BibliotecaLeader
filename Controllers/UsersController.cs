@@ -117,7 +117,35 @@ internal class UsersController
 
     internal void DeleteUser()
     {
-        Console.WriteLine("Eliminazione utente");
+        var userId = AnsiConsole.Ask<string>("Inserisci l'ID dell'utente da eliminare:");
+
+        var user = MockDatabase.Users.FirstOrDefault(b => b.UserId == userId);
+
+        if (user == null)
+        {
+            AnsiConsole.MarkupLine("[red]Errore: Nessun utente trovato con questo ID.[/]");
+            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+            Console.ReadKey(true);
+            return;
+        }
+
+        // Chiedere conferma prima di eliminare un utente
+        var confirm = AnsiConsole.Confirm($"Sei sicuro di voler eliminare l'utente [bold]{$"{user.FirstName} {user.LastName}"}[/]?");
+
+        if (!confirm)
+        {
+            AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
+            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+            Console.ReadKey(true);
+            return;
+        }
+
+        // Rimuove utente dalla lista
+        MockDatabase.Users.Remove(user);
+
+        AnsiConsole.MarkupLine("[green]📕 Utente eliminato con successo![/]");
+        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+        Console.ReadKey(true);
     }
 
     private User GetUserData(User? existingUser = null)
