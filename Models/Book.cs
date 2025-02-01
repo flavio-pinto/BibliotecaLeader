@@ -6,7 +6,7 @@ internal class Book
 
     static Book()
     {
-        if (MockDatabase.Books.Any())
+        if (MockDatabase.Books != null && MockDatabase.Books.Any())
         {
             _nextId = MockDatabase.Books.Max(b => int.Parse(b.BookId)) + 1;
         }
@@ -20,11 +20,28 @@ internal class Book
     public string Genre { get; set; }
     public string Language { get; set; }
     public int Quantity { get; set; }
-    public int Availability { get; set; }
+    private int _availability;
+    public int Availability
+    {
+        get => _availability;
+        set
+        {
+            if (value > Quantity)
+            {
+                throw new ArgumentException("La disponibilità non può essere superiore alla quantità totale.");
+            }
+            _availability = value;
+        }
+    }
     public string Edition { get; set; }
 
     public Book(string title, int year, string authors, string publisher, string genre, string language, int quantity, int availability, string edition)
     {
+        if (availability > quantity)
+        {
+            throw new ArgumentException("La disponibilità non può essere superiore alla quantità totale.");
+        }
+
         BookId = _nextId.ToString();
         _nextId++;
         Title = title;
@@ -34,7 +51,7 @@ internal class Book
         Genre = genre;
         Language = language;
         Quantity = quantity;
-        Availability = availability;
+        _availability = availability;
         Edition = edition;
     }
 }

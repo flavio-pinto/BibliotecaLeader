@@ -105,8 +105,25 @@ internal class BooksController
         string publisher = AnsiConsole.Ask<string>("Inserisci l'editore:" + (existingBook != null ? $" [gray](attuale: {existingBook.Publisher})[/]" : ""));
         string genre = AnsiConsole.Ask<string>("Inserisci il genere:" + (existingBook != null ? $" [gray](attuale: {existingBook.Genre})[/]" : ""));
         string language = AnsiConsole.Ask<string>("Inserisci la lingua:" + (existingBook != null ? $" [gray](attuale: {existingBook.Language})[/]" : ""));
+
         int quantity = AnsiConsole.Ask<int>("Inserisci la quantità:" + (existingBook != null ? $" [gray](attuale: {existingBook.Quantity})[/]" : ""));
-        int availability = AnsiConsole.Ask<int>("Inserisci la disponibilità:" + (existingBook != null ? $" [gray](attuale: {existingBook.Availability})[/]" : ""));
+
+        int availability;
+        while (true)
+        {
+            availability = AnsiConsole.Ask<int>("Inserisci la disponibilità:" + (existingBook != null ? $" [gray](attuale: {existingBook.Availability})[/]" : ""));
+
+            if (availability > quantity)
+            {
+                AnsiConsole.MarkupLine("[red]Errore: La disponibilità non può essere superiore alla quantità totale.[/]");
+                AnsiConsole.MarkupLine("[gray]Riprova inserendo un valore corretto.[/]");
+            }
+            else
+            {
+                break;
+            }
+        }
+
         string edition = AnsiConsole.Ask<string>("Inserisci l'edizione:" + (existingBook != null ? $" [gray](attuale: {existingBook.Edition})[/]" : ""));
 
         var newBook = new Book(
@@ -121,6 +138,12 @@ internal class BooksController
             edition
         );
 
+        if (existingBook != null)
+        {
+            newBook.BookId = existingBook.BookId;
+        }
+
         return newBook;
     }
+
 }
