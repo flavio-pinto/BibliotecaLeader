@@ -15,7 +15,7 @@ internal static class MockDatabase
         new Book("Fantozzi", 2001, "Dante Alighieri", "Scaramuzzi Editore", "Fantascienza", "Inglese", 11, 10, "7th"),
         new Book("Bla Bla Bla", 2000, "Walt Disney", "Disney Libri", "Commedia", "Francese", 12, 11, "8th"),
         new Book("Chi Chi Chi Co Co Co", 2007, "Sasà Salvaggio", "Beilibri Editore", "Commedia", "Italiano", 13, 12, "2nd"),
-        new Book("Il Libro della Sardegna", 2009, "Walt Disney", "Mondadori Editore", "Thriller", "Italiano", 14, 13, "1st")
+        new Book("Il Libro della Sardegna", 2009, "Walt Disney", "Mondadori Editore", "Thriller", "Italiano", 14, 0, "1st")
     };
 
     public static List<User> Users = new()
