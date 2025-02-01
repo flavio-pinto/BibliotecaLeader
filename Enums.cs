@@ -27,4 +27,13 @@ internal class Enums
         FilterByYear,
         Back
     }
+
+    internal enum UserMenuOption
+    {
+        ViewUsers,
+        AddUser,
+        EditUser,
+        DeleteUser,
+        Back
+    }
 }

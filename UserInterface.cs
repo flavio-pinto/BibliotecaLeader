@@ -7,6 +7,7 @@ namespace BibliotecaLeader;
 internal class UserInterface
 {
     private readonly BooksController _booksController = new();
+    private readonly UsersController _usersController = new();
 
     internal void MainMenu()
     {
@@ -35,7 +36,7 @@ internal class UserInterface
                     ManageBooksMenu();
                     break;
                 case MainMenuOptions.Users:
-                    AnsiConsole.MarkupLine("[bold]👥 Gestione Utenti[/]");
+                    ManageUsersMenu();
                     break;
                 case MainMenuOptions.Loans:
                     AnsiConsole.MarkupLine("[bold]🔄 Gestione Prestiti[/]");
@@ -122,6 +123,46 @@ internal class UserInterface
                 break;
             case FilterBooksOptions.Back:
                 return;
+        }
+    }
+
+    private void ManageUsersMenu()
+    {
+        while (true)
+        {
+            Console.Clear();
+
+            var userAction = AnsiConsole.Prompt(
+                new SelectionPrompt<UserMenuOptions>()
+                .Title("Seleziona un'opzione per la gestione degli utenti:")
+                .AddChoices(Enum.GetValues<UserMenuOptions>())
+                .UseConverter(option => option switch
+                {
+                    UserMenuOptions.ViewUsers => "📖 Visualizza Utenti",
+                    UserMenuOptions.AddUser => "➕ Aggiungi Utente",
+                    UserMenuOptions.EditUser => "✏️ Modifica Utente",
+                    UserMenuOptions.DeleteUser => "🗑️ Elimina Utente",
+                    UserMenuOptions.Back => "⬅️ Torna Indietro",
+                    _ => throw new ArgumentOutOfRangeException()
+                }));
+
+            switch (userAction)
+            {
+                case UserMenuOptions.ViewUsers:
+                    Console.WriteLine("test");
+                    break;
+                case UserMenuOptions.AddBook:
+                    Console.WriteLine("test");
+                    break;
+                case UserMenuOptions.EditBook:
+                    Console.WriteLine("test");
+                    break;
+                case UserMenuOptions.DeleteBook:
+                    Console.WriteLine("test");
+                    break;
+                case UserMenuOptions.Back:
+                    return;
+            }
         }
     }
 }
