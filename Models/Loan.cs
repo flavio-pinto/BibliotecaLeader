@@ -27,7 +27,7 @@ internal class Loan
         _userId = userId;
         _startDate = startDate;
         _endDate = endDate;
-        _returnDate = DateTime.MinValue;
+        _returnDate = _returnDate = null;
         _penalty = penalty;
     }
 }

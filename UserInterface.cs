@@ -267,16 +267,12 @@ internal class UserInterface
         switch (filterLoansAction)
         {
             case FilterLoansOptions.ShowAll:
-                Console.WriteLine("Work in progress...");
+                _loansController.ViewLoans();
                 break;
             case FilterLoansOptions.FilterByIsActive:
-                //string taxCode = AnsiConsole.Ask<string>("Inserisci il codice fiscale dell'utente:");
-                //_usersController.ViewUsers("Tax Code", taxCode);
                 Console.WriteLine("Work in progress...");
                 break;
             case FilterLoansOptions.FilterByUserId:
-                //string email = AnsiConsole.Ask<string>("Inserisci l'indirizzo email dell'utente:");
-                //_usersController.ViewUsers("Email", email);
                 Console.WriteLine("Work in progress...");
                 break;
             case FilterLoansOptions.Back:
