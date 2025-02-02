@@ -34,15 +34,15 @@ internal static class MockDatabase
 
     public static List<Loan> Loans = new()
     {
-        new Loan("1", "1", DateTime.Now.AddDays(-10), DateTime.Now.AddDays(20), 0),
-        new Loan("2", "2", DateTime.Now.AddDays(-15), DateTime.Now.AddDays(10), 0),
-        new Loan("3", "3", DateTime.Now.AddDays(-5), DateTime.Now.AddDays(25), 0),
-        new Loan("4", "4", DateTime.Now.AddDays(-20), DateTime.Now.AddDays(5), 0),
-        new Loan("5", "5", DateTime.Now.AddDays(-8), DateTime.Now.AddDays(15), 0),
-        new Loan("6", "6", DateTime.Now.AddDays(-3), DateTime.Now.AddDays(30), 0),
-        new Loan("7", "7", DateTime.Now.AddDays(-12), DateTime.Now.AddDays(18), 0),
-        new Loan("8", "8", DateTime.Now.AddDays(-7), DateTime.Now.AddDays(22), 0),
-        new Loan("9", "9", DateTime.Now.AddDays(-9), DateTime.Now.AddDays(12), 0),
-        new Loan("10", "10", DateTime.Now.AddDays(-6), DateTime.Now.AddDays(28), 0)
+        new Loan("1", "1", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("2", "2", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("3", "3", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("4", "4", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("5", "5", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("6", "6", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("7", "7", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("8", "8", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("9", "9", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("10", "10", DateTime.Now, DateTime.Now.AddDays(30))
     };
 }
