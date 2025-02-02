@@ -163,8 +163,54 @@ internal class LoansController()
 
     internal void DeleteLoan()
     {
-        Console.WriteLine("Work in progress...");
+        var loanId = AnsiConsole.Ask<string>("Inserisci l'ID del prestito da eliminare:");
+        var loan = MockDatabase.Loans.FirstOrDefault(l => l.LoanId == loanId);
+
+        if (loan == null)
+        {
+            AnsiConsole.MarkupLine("[red]Prestito non trovato![/]");
+            return;
+        }
+
+        var user = MockDatabase.Users.FirstOrDefault(u => u.UserId == loan.UserId);
+        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == loan.BookId);
+
+        if (user == null || book == null)
+        {
+            AnsiConsole.MarkupLine("[red]Errore: utente o libro associato non trovati.[/]");
+            return;
+        }
+
+        // Mostra dettagli del prestito e chiede conferma prima di eliminare
+        AnsiConsole.MarkupLine($"[yellow]Confermi l'eliminazione del prestito?[/]");
+        AnsiConsole.MarkupLine($"📚 [bold]Libro:[/] {book.Title}");
+        AnsiConsole.MarkupLine($"👤 [bold]Utente:[/] {user.FirstName} {user.LastName}");
+        AnsiConsole.MarkupLine($"📅 [bold]Data inizio:[/] {loan.StartDate:dd/MM/yyyy}");
+        AnsiConsole.MarkupLine($"📅 [bold]Scadenza:[/] {loan.EndDate:dd/MM/yyyy}");
+        AnsiConsole.MarkupLine($"📅 [bold]Restituzione:[/] {(loan.ReturnDate?.ToString("dd/MM/yyyy") ?? "[red]Non restituito[/]")}");
+
+        var confirmation = AnsiConsole.Confirm("[bold red]Sei sicuro di voler eliminare questo prestito?[/]");
+
+        if (!confirmation)
+        {
+            AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
+            return;
+        }
+
+        // Se il prestito non è stato restituito, aumenta la disponibilità del libro
+        if (loan.ReturnDate == null)
+        {
+            book.Availability++;
+            AnsiConsole.MarkupLine($"[yellow]📖 La disponibilità del libro '{book.Title}' è stata aumentata a {book.Availability}.[/]");
+        }
+
+        // Eliminazione del prestito dalla lista
+        MockDatabase.Loans.Remove(loan);
+        AnsiConsole.MarkupLine("[green]🗑️ Prestito eliminato con successo![/]");
+        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+        Console.ReadKey(true);
     }
+
 
     private Loan GetLoanData(Loan? existingLoan = null)
     {
