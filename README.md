@@ -2,7 +2,7 @@
 
 **BibliotecaLeader** è un'applicazione console scritta in **C# e .NET**, progettata per gestire una biblioteca, permettendo la gestione di **libri, utenti e prestiti**. Utilizza la libreria **Spectre.Console** per un'interfaccia a riga di comando migliorata.
 
-**Per un'esperienza migliore, suggerisco di utilizzare il terminale a schermo intero.**
+**Per un'esperienza di utilizzo migliore, suggerisco di utilizzare il terminale a schermo intero.**
 
 ## ✨ Funzionalità Principali
 
