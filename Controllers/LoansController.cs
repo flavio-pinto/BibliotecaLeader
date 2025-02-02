@@ -109,10 +109,57 @@ internal class LoansController()
         Console.ReadKey(true);
     }
 
-    internal void EndLoan()
+    public void EndLoan()
     {
-        Console.WriteLine("Work in progress...");
+        var loanId = AnsiConsole.Ask<string>("Inserisci l'ID del prestito da terminare:");
+        var loan = MockDatabase.Loans.FirstOrDefault(l => l.LoanId == loanId);
+
+        if (loan == null)
+        {
+            AnsiConsole.MarkupLine("[red]Prestito non trovato![/]");
+            return;
+        }
+
+        var user = MockDatabase.Users.FirstOrDefault(u => u.UserId == loan.UserId);
+        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == loan.BookId);
+
+        if (user == null || book == null)
+        {
+            AnsiConsole.MarkupLine("[red]Errore: utente o libro non trovati.[/]");
+            return;
+        }
+
+        AnsiConsole.MarkupLine($"[green]Confermi la restituzione del libro '{book.Title}' da parte di {user.FirstName} {user.LastName}? (S/N)[/]");
+        var confirmation = Console.ReadLine()?.Trim().ToLower();
+        if (confirmation != "s")
+        {
+            AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
+            return;
+        }
+
+        // Aggiorna la data di restituzione
+        loan.ReturnDate = DateTime.Now;
+
+        // Calcola la penale se la restituzione è in ritardo
+        if (loan.ReturnDate > loan.EndDate)
+        {
+            var overdueDays = (loan.ReturnDate - loan.EndDate)?.Days ?? 0;
+            loan.Penalty = overdueDays * 2;
+            AnsiConsole.MarkupLine($"[red]Il prestito è in ritardo di {overdueDays} giorni. Penale applicata: {loan.Penalty}€.[/]");
+        }
+        else
+        {
+            loan.Penalty = 0;
+        }
+
+        // Aumenta la disponibilità del libro
+        book.Availability++;
+
+        AnsiConsole.MarkupLine("[green]✅ Restituzione completata con successo![/]");
+        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
+        Console.ReadKey(true);
     }
+
 
     internal void DeleteLoan()
     {
