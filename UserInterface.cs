@@ -8,6 +8,7 @@ internal class UserInterface
 {
     private readonly BooksController _booksController = new();
     private readonly UsersController _usersController = new();
+    private readonly LoansController _loansController = new();
 
     internal void MainMenu()
     {
@@ -39,7 +40,7 @@ internal class UserInterface
                     ManageUsersMenu();
                     break;
                 case MainMenuOptions.Loans:
-                    AnsiConsole.MarkupLine("[bold]🔄 Gestione Prestiti[/]");
+                    ManageLoansMenu();
                     break;
                 case MainMenuOptions.Exit:
                     AnsiConsole.MarkupLine("[red]Uscita dal programma...[/]");
@@ -200,6 +201,85 @@ internal class UserInterface
                 _usersController.ViewUsers("Email", email);
                 break;
             case FilterUsersOptions.Back:
+                return;
+        }
+    }
+
+    private void ManageLoansMenu()
+    {
+        while (true)
+        {
+            Console.Clear();
+
+            var loanAction = AnsiConsole.Prompt(
+                new SelectionPrompt<LoanMenuOptions>()
+                .Title("Seleziona un'opzione per la gestione dei prestiti:")
+                .AddChoices(Enum.GetValues<LoanMenuOptions>())
+                .UseConverter(option => option switch
+                {
+                    LoanMenuOptions.ViewLoans => "📖 Visualizza Prestiti",
+                    LoanMenuOptions.NewLoan => "➕ Nuovo Prestito",
+                    LoanMenuOptions.EditLoan => "✏️ Modifica Prestito",
+                    LoanMenuOptions.EndLoan => "🔚 Termina Prestito",
+                    LoanMenuOptions.DeleteLoan => "🗑️ Elimina Prestito",
+                    LoanMenuOptions.Back => "⬅️ Torna Indietro",
+                    _ => throw new ArgumentOutOfRangeException()
+                }));
+
+            switch (loanAction)
+            {
+                case LoanMenuOptions.ViewLoans:
+                    FilterLoansMenu();
+                    break;
+                case LoanMenuOptions.NewLoan:
+                    _loansController.NewLoan();
+                    break;
+                case LoanMenuOptions.EditLoan:
+                    _loansController.EditLoan();
+                    break;
+                case LoanMenuOptions.EndLoan:
+                    _loansController.EndLoan();
+                    break;
+                case LoanMenuOptions.DeleteLoan:
+                    _loansController.DeleteLoan();
+                    break;
+                case LoanMenuOptions.Back:
+                    return;
+            }
+        }
+    }
+
+    private void FilterLoansMenu()
+    {
+        var filterLoansAction = AnsiConsole.Prompt(
+            new SelectionPrompt<FilterLoansOptions>()
+            .Title("Scegli se vuoi mostrare tutti gli utenti o preferisci filtrarli:")
+            .AddChoices(Enum.GetValues<FilterLoansOptions>())
+            .UseConverter(option => option switch
+            {
+                FilterLoansOptions.ShowAll => "👥 Mostra Tutti",
+                FilterLoansOptions.FilterByIsActive => "🔍 Filtra per Attivi",
+                FilterLoansOptions.FilterByUserId => "👤 Filtra per ID utente",
+                FilterLoansOptions.Back => "⬅️ Torna Indietro",
+                _ => throw new ArgumentOutOfRangeException()
+            }));
+
+        switch (filterLoansAction)
+        {
+            case FilterLoansOptions.ShowAll:
+                Console.WriteLine("Work in progress...");
+                break;
+            case FilterLoansOptions.FilterByIsActive:
+                //string taxCode = AnsiConsole.Ask<string>("Inserisci il codice fiscale dell'utente:");
+                //_usersController.ViewUsers("Tax Code", taxCode);
+                Console.WriteLine("Work in progress...");
+                break;
+            case FilterLoansOptions.FilterByUserId:
+                //string email = AnsiConsole.Ask<string>("Inserisci l'indirizzo email dell'utente:");
+                //_usersController.ViewUsers("Email", email);
+                Console.WriteLine("Work in progress...");
+                break;
+            case FilterLoansOptions.Back:
                 return;
         }
     }

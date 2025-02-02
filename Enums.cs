@@ -45,4 +45,22 @@ internal class Enums
         FilterByEmail,
         Back
     }
+
+    internal enum LoanMenuOptions
+    {
+        ViewLoans,
+        NewLoan,
+        EditLoan,
+        EndLoan,
+        DeleteLoan,
+        Back
+    }
+
+    internal enum FilterLoansOptions
+    {
+        ShowAll,
+        FilterByIsActive,
+        FilterByUserId,
+        Back
+    }
 }
