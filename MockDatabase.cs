@@ -6,16 +6,16 @@ internal static class MockDatabase
 {
     public static List<Book> Books = new()
     {
-        new Book("La Divina Commedia", 2000, "Dante Alighieri", "Mondadori Editore", "Thriller", "Italiano", 5, 5, "1^"),
-        new Book("Le Ge Son Fè", 2001, "Fiorita Fiorano", "Scaramuzzi Editore", "Commedia", "Francese", 6, 6, "2^"),
-        new Book("Flowers for Nina", 2002, "Gennaro Carozzo", "Beilibri Editore", "Fantascienza", "Inglese", 7, 7, "3^"),
-        new Book("Paperino e Pippo", 2003, "Walt Disney", "Disney Libri", "Avventura", "Italiano", 8, 8, "2^"),
-        new Book("Neve d'Estate", 2000, "Sasà Salvaggio", "Scaramuzzi Editore", "Thriller", "Italiano", 9, 9, "5^"),
-        new Book("Cocco Bello", 2002, "Gennaro Carozzo", "Beilibri Editore", "Avventura", "Italiano", 10, 10, "1^"),
-        new Book("Fantozzi", 2001, "Dante Alighieri", "Scaramuzzi Editore", "Fantascienza", "Inglese", 11, 11, "7^"),
-        new Book("Bla Bla Bla", 2000, "Walt Disney", "Disney Libri", "Commedia", "Francese", 12, 12, "8^"),
-        new Book("Chi Chi Chi Co Co Co", 2007, "Sasà Salvaggio", "Beilibri Editore", "Commedia", "Italiano", 13, 13, "2^"),
-        new Book("Il Libro della Sardegna", 2009, "Walt Disney", "Mondadori Editore", "Thriller", "Italiano", 14, 14, "1^")
+        new Book("La Divina Commedia", 2000, "Dante Alighieri", "Mondadori Editore", "Thriller", "Italiano", 5, 3, "1^"),
+        new Book("Le Ge Son Fè", 2001, "Fiorita Fiorano", "Scaramuzzi Editore", "Commedia", "Francese", 6, 4, "2^"),
+        new Book("Flowers for Nina", 2002, "Gennaro Carozzo", "Beilibri Editore", "Fantascienza", "Inglese", 7, 6, "3^"),
+        new Book("Paperino e Pippo", 2003, "Walt Disney", "Disney Libri", "Avventura", "Italiano", 8, 7, "2^"),
+        new Book("Neve d'Estate", 2000, "Sasà Salvaggio", "Scaramuzzi Editore", "Thriller", "Italiano", 9, 8, "5^"),
+        new Book("Cocco Bello", 2002, "Gennaro Carozzo", "Beilibri Editore", "Avventura", "Italiano", 10, 9, "1^"),
+        new Book("Fantozzi", 2001, "Dante Alighieri", "Scaramuzzi Editore", "Fantascienza", "Inglese", 11, 10, "7^"),
+        new Book("Bla Bla Bla", 2000, "Walt Disney", "Disney Libri", "Commedia", "Francese", 12, 11, "8^"),
+        new Book("Chi Chi Chi Co Co Co", 2007, "Sasà Salvaggio", "Beilibri Editore", "Commedia", "Italiano", 13, 12, "2^"),
+        new Book("Il Libro della Sardegna", 2009, "Walt Disney", "Mondadori Editore", "Thriller", "Italiano", 14, 13, "1^")
     };
 
     public static List<User> Users = new()
@@ -34,6 +34,7 @@ internal static class MockDatabase
 
     public static List<Loan> Loans = new()
     {
+        // Nel mock db dei libri ho settato la disponibilità in modo tale che sia coerente con i prestiti presenti qui sotto
         new Loan("1", "1", DateTime.Now, DateTime.Now.AddDays(30)),
         new Loan("2", "2", DateTime.Now, DateTime.Now.AddDays(30)),
         new Loan("3", "3", DateTime.Now, DateTime.Now.AddDays(30)),
@@ -43,6 +44,8 @@ internal static class MockDatabase
         new Loan("7", "7", DateTime.Now, DateTime.Now.AddDays(30)),
         new Loan("8", "8", DateTime.Now, DateTime.Now.AddDays(30)),
         new Loan("9", "9", DateTime.Now, DateTime.Now.AddDays(30)),
-        new Loan("10", "10", DateTime.Now, DateTime.Now.AddDays(30))
+        new Loan("10", "10", DateTime.Now, DateTime.Now.AddDays(30)),
+        new Loan("1", "1", DateTime.Now.AddDays(-40), DateTime.Now.AddDays(-10)), // Per testing prestito scaduto con penale
+        new Loan("2", "2", DateTime.Now.AddDays(-20), DateTime.Now.AddDays(-5))  // Per testing prestito scaduto con penale
     };
 }
