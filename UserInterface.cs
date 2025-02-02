@@ -270,10 +270,11 @@ internal class UserInterface
                 _loansController.ViewLoans();
                 break;
             case FilterLoansOptions.FilterByIsActive:
-                Console.WriteLine("Work in progress...");
+                _loansController.ViewLoans("IsActive");
                 break;
             case FilterLoansOptions.FilterByUserId:
-                Console.WriteLine("Work in progress...");
+                string userId = AnsiConsole.Ask<string>("Inserisci l'ID dell'utente:");
+                _loansController.ViewLoans("UserId", userId);
                 break;
             case FilterLoansOptions.Back:
                 return;
