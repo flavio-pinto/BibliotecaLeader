@@ -1,34 +1,38 @@
-﻿using Spectre.Console;
+﻿using BibliotecaLeader.Data;
 using BibliotecaLeader.Models;
+using Spectre.Console;
 
 namespace BibliotecaLeader.Controllers;
 
-internal class BooksController
+public class BooksController
 {
-    internal void ViewBooks(string? filterType = null, string? filterValue = null)
+    private readonly BibliotecaContext _context;
+
+    public BooksController(BibliotecaContext context)
+    {
+        _context = context;
+    }
+
+    public void ViewBooks(string? filterType = null, string? filterValue = null)
     {
         var table = new Table();
         table.Border(TableBorder.Rounded);
         table.AddColumn("[yellow]ID[/]");
         table.AddColumn("[yellow]Titolo[/]");
-        table.AddColumn("[yellow]Anno[/]");
         table.AddColumn("[yellow]Autori[/]");
-        table.AddColumn("[yellow]Editore[/]");
+        table.AddColumn("[yellow]Anno[/]");
         table.AddColumn("[yellow]Genere[/]");
         table.AddColumn("[yellow]Lingua[/]");
-        table.AddColumn("[yellow]Quantità[/]");
         table.AddColumn("[yellow]Disponibilità[/]");
-        table.AddColumn("[yellow]Edizione[/]");
 
-        var books = MockDatabase.Books.OfType<Book>();
+        var books = _context.Books.AsQueryable();
 
-        // Applica il filtro se presente
         if (!string.IsNullOrEmpty(filterType) && !string.IsNullOrEmpty(filterValue))
         {
             books = filterType switch
             {
-                "Author" => books.Where(b => b.Authors.Contains(filterValue, StringComparison.OrdinalIgnoreCase)),
-                "Title" => books.Where(b => b.Title.Contains(filterValue, StringComparison.OrdinalIgnoreCase)),
+                "Author" => books.Where(b => b.Authors.Contains(filterValue)),
+                "Title" => books.Where(b => b.Title.Contains(filterValue)),
                 "Year" => books.Where(b => b.Year.ToString() == filterValue),
                 _ => books
             };
@@ -37,16 +41,13 @@ internal class BooksController
         foreach (var book in books)
         {
             table.AddRow(
-                book.BookId,
-                $"[magenta3_1]{book.Title}[/]",
-                $"[blue]{book.Year}[/]",
-                $"[magenta3_1]{book.Authors}[/]",
-                $"[blue]{book.Publisher}[/]",
-                $"[blue]{book.Genre}[/]",
-                $"[blue]{book.Language}[/]",
-                book.Quantity == 0 ? $"[red3]{book.Quantity}[/]" : $"[green]{book.Quantity}[/]",
-                book.Availability == 0 ? "[red3]Non Disponibile[/]" : $"[green]{book.Availability}[/]",
-                $"[blue]{book.Edition}[/]"
+                book.Id.ToString(),
+                book.Title,
+                book.Authors,
+                book.Year.ToString(),
+                book.Genre,
+                book.Language,
+                book.Availability.ToString()
             );
         }
 
@@ -63,19 +64,41 @@ internal class BooksController
         Console.ReadKey();
     }
 
-    internal void AddBook()
+    public void AddBook()
     {
-        var newBook = GetBookData();
-        MockDatabase.Books.Add(newBook);
-        AnsiConsole.MarkupLine("[green]📘 Libro aggiunto con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        var title = AnsiConsole.Ask<string>("Inserisci il titolo:");
+        var authors = AnsiConsole.Ask<string>("Inserisci gli autori:");
+        var year = AnsiConsole.Ask<int>("Inserisci l'anno di pubblicazione:");
+        var publisher = AnsiConsole.Ask<string>("Inserisci l'editore:");
+        var genre = AnsiConsole.Ask<string>("Inserisci il genere:");
+        var language = AnsiConsole.Ask<string>("Inserisci la lingua:");
+        var quantity = AnsiConsole.Ask<int>("Inserisci la quantità disponibile:");
+        var edition = AnsiConsole.Ask<string>("Inserisci l'edizione:");
+
+        var newBook = new Book
+        {
+            Title = title,
+            Year = year,
+            Authors = authors,
+            Publisher = publisher,
+            Genre = genre,
+            Language = language,
+            Quantity = quantity,
+            Availability = quantity, // La disponibilità iniziale è uguale alla quantità totale
+            Edition = edition
+        };
+
+        _context.Books.Add(newBook);
+        _context.SaveChanges();
+
+        AnsiConsole.MarkupLine("[green]📚 Libro aggiunto con successo![/]");
+        Console.ReadKey();
     }
 
-    internal void EditBook()
+    public void EditBook()
     {
-        var bookId = AnsiConsole.Ask<string>("Inserisci l'ID del libro da modificare:");
-        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == bookId);
+        var bookId = AnsiConsole.Ask<int>("Inserisci l'ID del libro da modificare:");
+        var book = _context.Books.Find(bookId);
 
         if (book == null)
         {
@@ -83,90 +106,46 @@ internal class BooksController
             return;
         }
 
-        var updatedBook = GetBookData(book);
-        updatedBook.BookId = book.BookId;
-        MockDatabase.Books.Remove(book);
-        MockDatabase.Books.Add(updatedBook);
+        book.Title = AnsiConsole.Ask<string>($"Titolo attuale: {book.Title} - Inserisci nuovo titolo (o lascia vuoto per mantenere):", book.Title);
+        book.Authors = AnsiConsole.Ask<string>($"Autori attuali: {book.Authors} - Inserisci nuovi autori:", book.Authors);
+        book.Year = AnsiConsole.Ask<int>($"Anno attuale: {book.Year} - Inserisci nuovo anno:", book.Year);
+        book.Publisher = AnsiConsole.Ask<string>($"Editore attuale: {book.Publisher} - Inserisci nuovo editore:", book.Publisher);
+        book.Genre = AnsiConsole.Ask<string>($"Genere attuale: {book.Genre} - Inserisci nuovo genere:", book.Genre);
+        book.Language = AnsiConsole.Ask<string>($"Lingua attuale: {book.Language} - Inserisci nuova lingua:", book.Language);
+        book.Quantity = AnsiConsole.Ask<int>($"Quantità attuale: {book.Quantity} - Inserisci nuova quantità:", book.Quantity);
+        book.Availability = AnsiConsole.Ask<int>($"Disponibilità attuale: {book.Availability} - Inserisci nuova disponibilità:", book.Availability);
+        book.Edition = AnsiConsole.Ask<string>($"Edizione attuale: {book.Edition} - Inserisci nuova edizione:", book.Edition);
+
+        _context.SaveChanges();
+
         AnsiConsole.MarkupLine("[green]✏️ Libro modificato con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        Console.ReadKey();
     }
 
-    internal void DeleteBook()
+    public void DeleteBook()
     {
-        var bookId = AnsiConsole.Ask<string>("Inserisci l'ID del libro da eliminare:");
-
-        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == bookId);
+        var bookId = AnsiConsole.Ask<int>("Inserisci l'ID del libro da eliminare:");
+        var book = _context.Books.Find(bookId);
 
         if (book == null)
         {
-            AnsiConsole.MarkupLine("[red]Errore: Nessun libro trovato con questo ID.[/]");
-            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-            Console.ReadKey(true);
+            AnsiConsole.MarkupLine("[red]Libro non trovato![/]");
             return;
         }
 
-        // Chiedere conferma prima di eliminare il libro
-        var confirm = AnsiConsole.Confirm($"Sei sicuro di voler eliminare il libro [bold]{book.Title}[/]?");
+        AnsiConsole.MarkupLine($"[yellow]Sei sicuro di voler eliminare il libro '{book.Title}'? (S/N)[/]");
+        var confirmation = Console.ReadLine()?.Trim().ToLower();
 
-        if (!confirm)
+        if (confirmation != "s")
         {
             AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
-            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-            Console.ReadKey(true);
             return;
         }
 
-        // Rimuove il libro dalla lista
-        MockDatabase.Books.Remove(book);
+        _context.Books.Remove(book);
+        _context.SaveChanges();
 
-        AnsiConsole.MarkupLine("[green]📕 Libro eliminato con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        AnsiConsole.MarkupLine("[green]🗑️ Libro eliminato con successo![/]");
+        Console.ReadKey();
     }
-
-    private Book GetBookData(Book? existingBook = null)
-    {
-        string title = AnsiConsole.Ask<string>("Inserisci il titolo del libro:" + (existingBook != null ? $" [gray](attuale: {existingBook.Title})[/]" : ""));
-        int year = AnsiConsole.Ask<int>("Inserisci l'anno di pubblicazione:" + (existingBook != null ? $" [gray](attuale: {existingBook.Year})[/]" : ""));
-        string authors = AnsiConsole.Ask<string>("Inserisci gli autori:" + (existingBook != null ? $" [gray](attuale: {existingBook.Authors})[/]" : ""));
-        string publisher = AnsiConsole.Ask<string>("Inserisci l'editore:" + (existingBook != null ? $" [gray](attuale: {existingBook.Publisher})[/]" : ""));
-        string genre = AnsiConsole.Ask<string>("Inserisci il genere:" + (existingBook != null ? $" [gray](attuale: {existingBook.Genre})[/]" : ""));
-        string language = AnsiConsole.Ask<string>("Inserisci la lingua:" + (existingBook != null ? $" [gray](attuale: {existingBook.Language})[/]" : ""));
-
-        int quantity = AnsiConsole.Ask<int>("Inserisci la quantità:" + (existingBook != null ? $" [gray](attuale: {existingBook.Quantity})[/]" : ""));
-
-        int availability;
-        while (true)
-        {
-            availability = AnsiConsole.Ask<int>("Inserisci la disponibilità:" + (existingBook != null ? $" [gray](attuale: {existingBook.Availability})[/]" : ""));
-
-            if (availability > quantity)
-            {
-                AnsiConsole.MarkupLine("[red]Errore: La disponibilità non può essere superiore alla quantità totale.[/]");
-                AnsiConsole.MarkupLine("[gray]Riprova inserendo un valore corretto.[/]");
-            }
-            else
-            {
-                break;
-            }
-        }
-
-        string edition = AnsiConsole.Ask<string>("Inserisci l'edizione:" + (existingBook != null ? $" [gray](attuale: {existingBook.Edition})[/]" : ""));
-
-        var newBook = new Book(
-            title,
-            year,
-            authors,
-            publisher,
-            genre,
-            language,
-            quantity,
-            availability,
-            edition
-        );
-
-        return newBook;
-    }
-
 }

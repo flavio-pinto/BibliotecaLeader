@@ -1,40 +1,41 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace BibliotecaLeader.Models;
 
-internal class User
+public class User
 {
-    private static int _nextId = 1;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
-    static User()
-    {
-        if (MockDatabase.Users != null && MockDatabase.Users.Any())
-        {
-            _nextId = MockDatabase.Users.Max(b => int.Parse(b.UserId)) + 1;
-        }
-    }
+    [Required]
+    public string FirstName { get; set; } = string.Empty;
 
-    public string UserId { get; set; }
-    public string FirstName { get; set; }
-    public string LastName { get; set; }
+    [Required]
+    public string LastName { get; set; } = string.Empty;
+
+    [Required]
     public DateTime BirthDate { get; set; }
-    public string TaxCode { get; set; }
-    public string Email { get; set; }
-    public string Phone { get; set; }
-    public string Address { get; set; }
-    public string City { get; set; }
-    public string Province { get; set; }
 
-    public User(string firstName, string lastName, DateTime birthDate, string taxCode, string email, string phone, string address, string city, string province)
-    {
-        UserId = _nextId.ToString();
-        _nextId++;
-        FirstName = firstName;
-        LastName = lastName;
-        BirthDate = birthDate;
-        TaxCode = taxCode;
-        Email = email;
-        Phone = phone;
-        Address = address;
-        City = city;
-        Province = province;
-    }
+    [Required]
+    public string TaxCode { get; set; } = string.Empty;
+
+    [Required]
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
+    public string Phone { get; set; } = string.Empty;
+
+    [Required]
+    public string Address { get; set; } = string.Empty;
+
+    [Required]
+    public string City { get; set; } = string.Empty;
+
+    [Required]
+    public string Province { get; set; } = string.Empty;
+
+    // Costruttore vuoto richiesto da Entity Framework
+    public User() { }
 }

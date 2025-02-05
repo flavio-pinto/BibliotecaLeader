@@ -1,33 +1,36 @@
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace BibliotecaLeader.Models;
 
-internal class Loan
+public class Loan
 {
-    private static int _nextId = 1;
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public int Id { get; set; }
 
-    static Loan()
-    {
-        if (MockDatabase.Loans != null && MockDatabase.Loans.Any())
-        {
-            _nextId = MockDatabase.Loans.Max(l => int.Parse(l.LoanId)) + 1;
-        }
-    }
+    [Required]
+    public int BookId { get; set; }
 
-    public string LoanId { get; set; }
-    public string BookId { get; set; }
-    public string UserId { get; set; }
+    [Required]
+    public int UserId { get; set; }
+
+    [ForeignKey("BookId")]
+    public Book? Book { get; set; }
+
+    [ForeignKey("UserId")]
+    public User? User { get; set; }
+
+    [Required]
     public DateTime StartDate { get; set; }
+
+    [Required]
     public DateTime EndDate { get; set; }
+
     public DateTime? ReturnDate { get; set; }
+
     public decimal Penalty { get; set; } = 0;
 
-    public Loan(string bookId, string userId, DateTime startDate, DateTime endDate)
-    {
-        LoanId = _nextId.ToString();
-        _nextId++;
-        BookId = bookId;
-        UserId = userId;
-        StartDate = startDate;
-        EndDate = endDate;
-        ReturnDate = null;
-    }
+    // Costruttore vuoto richiesto da Entity Framework
+    public Loan() { }
 }

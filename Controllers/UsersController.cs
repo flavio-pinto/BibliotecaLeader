@@ -1,42 +1,39 @@
-﻿using Spectre.Console;
-using System.Text.RegularExpressions;
+﻿using BibliotecaLeader.Data;
 using BibliotecaLeader.Models;
+using Spectre.Console;
 
 namespace BibliotecaLeader.Controllers;
 
-internal class UsersController
+public class UsersController
 {
-    internal void ViewUsers(string? filterType = null, string? filterValue = null)
+    private readonly BibliotecaContext _context;
+
+    public UsersController(BibliotecaContext context)
+    {
+        _context = context;
+    }
+
+    public void ViewUsers(string? filterType = null, string? filterValue = null)
     {
         var table = new Table();
         table.Border(TableBorder.Rounded);
         table.AddColumn("[yellow]ID[/]");
-        table.AddColumn("[yellow]Nome e Cognome[/]");
-        table.AddColumn("[yellow]Data di Nascita[/]");
+        table.AddColumn("[yellow]Nome[/]");
+        table.AddColumn("[yellow]Cognome[/]");
         table.AddColumn("[yellow]Codice Fiscale[/]");
         table.AddColumn("[yellow]Email[/]");
         table.AddColumn("[yellow]Telefono[/]");
-        table.AddColumn("[yellow]Indirizzo[/]");
         table.AddColumn("[yellow]Città[/]");
-        table.AddColumn("[yellow]Provincia[/]");
 
-        var users = MockDatabase.Users.OfType<User>();
+        var users = _context.Users.AsQueryable();
 
-        // Applica il filtro se presente
         if (!string.IsNullOrEmpty(filterType) && !string.IsNullOrEmpty(filterValue))
         {
             users = filterType switch
             {
-                "Name" => users.Where(u =>
-                {
-                    var searchTerms = filterValue.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-                    return searchTerms.All(term =>
-                        u.FirstName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                        u.LastName.Contains(term, StringComparison.OrdinalIgnoreCase)
-                    );
-                }),
-                "Tax Code" => users.Where(u => u.TaxCode.Contains(filterValue, StringComparison.OrdinalIgnoreCase)),
-                "Email" => users.Where(u => u.Email.Contains(filterValue, StringComparison.OrdinalIgnoreCase)),
+                "Name" => users.Where(u => u.FirstName.Contains(filterValue) || u.LastName.Contains(filterValue)),
+                "Tax Code" => users.Where(u => u.TaxCode.Contains(filterValue)),
+                "Email" => users.Where(u => u.Email.Contains(filterValue)),
                 _ => users
             };
         }
@@ -44,15 +41,13 @@ internal class UsersController
         foreach (var user in users)
         {
             table.AddRow(
-                user.UserId,
-                $"[magenta3_1]{$"{user.FirstName} {user.LastName}"}[/]",
-                $"[blue]{user.BirthDate:dd/MM/yyyy}[/]",
-                $"[blue]{user.TaxCode}[/]",
-                $"[blue]{user.Email}[/]",
-                $"[blue]{user.Phone}[/]",
-                $"[blue]{user.Address}[/]",
-                $"[blue]{user.City}[/]",
-                $"[blue]{user.Province}[/]"
+                user.Id.ToString(),
+                user.FirstName,
+                user.LastName,
+                user.TaxCode,
+                user.Email,
+                user.Phone,
+                user.City
             );
         }
 
@@ -69,27 +64,42 @@ internal class UsersController
         Console.ReadKey();
     }
 
-    internal void AddUser()
+    public void AddUser()
     {
-        try
-        {
-            var newUser = GetUserData();
-            MockDatabase.Users.Add(newUser);
-            AnsiConsole.MarkupLine("[green]📘 Utente aggiunto con successo![/]");
-        }
-        catch (ArgumentException ex)
-        {
-            AnsiConsole.MarkupLine($"[red]{ex.Message}[/]");
-        }
+        var firstName = AnsiConsole.Ask<string>("Inserisci il nome:");
+        var lastName = AnsiConsole.Ask<string>("Inserisci il cognome:");
+        var birthDate = AnsiConsole.Ask<DateTime>("Inserisci la data di nascita (yyyy-mm-dd):");
+        var taxCode = AnsiConsole.Ask<string>("Inserisci il codice fiscale:");
+        var email = AnsiConsole.Ask<string>("Inserisci l'email:");
+        var phone = AnsiConsole.Ask<string>("Inserisci il numero di telefono:");
+        var address = AnsiConsole.Ask<string>("Inserisci l'indirizzo:");
+        var city = AnsiConsole.Ask<string>("Inserisci la città:");
+        var province = AnsiConsole.Ask<string>("Inserisci la provincia:");
 
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        var newUser = new User
+        {
+            FirstName = firstName,
+            LastName = lastName,
+            BirthDate = birthDate,
+            TaxCode = taxCode,
+            Email = email,
+            Phone = phone,
+            Address = address,
+            City = city,
+            Province = province
+        };
+
+        _context.Users.Add(newUser);
+        _context.SaveChanges();
+
+        AnsiConsole.MarkupLine("[green]👤 Utente aggiunto con successo![/]");
+        Console.ReadKey();
     }
 
-    internal void EditUser()
+    public void EditUser()
     {
-        var userId = AnsiConsole.Ask<string>("Inserisci l'ID dell'utente da modificare:");
-        var user = MockDatabase.Users.FirstOrDefault(u => u.UserId == userId);
+        var userId = AnsiConsole.Ask<int>("Inserisci l'ID dell'utente da modificare:");
+        var user = _context.Users.Find(userId);
 
         if (user == null)
         {
@@ -97,92 +107,46 @@ internal class UsersController
             return;
         }
 
-        try
-        {
-            var updatedUser = GetUserData(user);
-            updatedUser.UserId = user.UserId;
-            MockDatabase.Users.Remove(user);
-            MockDatabase.Users.Add(updatedUser);
-            AnsiConsole.MarkupLine("[green]✏️ Utente modificato con successo![/]");
-        }
-        catch (ArgumentException ex)
-        {
-            AnsiConsole.MarkupLine($"[red]{ex.Message}[/]");
-        }
+        user.FirstName = AnsiConsole.Ask<string>($"Nome attuale: {user.FirstName} - Inserisci nuovo nome (o lascia vuoto per mantenere):", user.FirstName);
+        user.LastName = AnsiConsole.Ask<string>($"Cognome attuale: {user.LastName} - Inserisci nuovo cognome:", user.LastName);
+        user.BirthDate = AnsiConsole.Ask<DateTime>($"Data di nascita attuale: {user.BirthDate:yyyy-MM-dd} - Inserisci nuova data:", user.BirthDate);
+        user.TaxCode = AnsiConsole.Ask<string>($"Codice fiscale attuale: {user.TaxCode} - Inserisci nuovo codice:", user.TaxCode);
+        user.Email = AnsiConsole.Ask<string>($"Email attuale: {user.Email} - Inserisci nuova email:", user.Email);
+        user.Phone = AnsiConsole.Ask<string>($"Telefono attuale: {user.Phone} - Inserisci nuovo telefono:", user.Phone);
+        user.Address = AnsiConsole.Ask<string>($"Indirizzo attuale: {user.Address} - Inserisci nuovo indirizzo:", user.Address);
+        user.City = AnsiConsole.Ask<string>($"Città attuale: {user.City} - Inserisci nuova città:", user.City);
+        user.Province = AnsiConsole.Ask<string>($"Provincia attuale: {user.Province} - Inserisci nuova provincia:", user.Province);
 
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        _context.SaveChanges();
+
+        AnsiConsole.MarkupLine("[green]✏️ Utente modificato con successo![/]");
+        Console.ReadKey();
     }
 
-
-    internal void DeleteUser()
+    public void DeleteUser()
     {
-        var userId = AnsiConsole.Ask<string>("Inserisci l'ID dell'utente da eliminare:");
-
-        var user = MockDatabase.Users.FirstOrDefault(b => b.UserId == userId);
+        var userId = AnsiConsole.Ask<int>("Inserisci l'ID dell'utente da eliminare:");
+        var user = _context.Users.Find(userId);
 
         if (user == null)
         {
-            AnsiConsole.MarkupLine("[red]Errore: Nessun utente trovato con questo ID.[/]");
-            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-            Console.ReadKey(true);
+            AnsiConsole.MarkupLine("[red]Utente non trovato![/]");
             return;
         }
 
-        // Chiedere conferma prima di eliminare un utente
-        var confirm = AnsiConsole.Confirm($"Sei sicuro di voler eliminare l'utente [bold]{$"{user.FirstName} {user.LastName}"}[/]?");
+        AnsiConsole.MarkupLine($"[yellow]Sei sicuro di voler eliminare l'utente '{user.FirstName} {user.LastName}'? (S/N)[/]");
+        var confirmation = Console.ReadLine()?.Trim().ToLower();
 
-        if (!confirm)
+        if (confirmation != "s")
         {
             AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
-            AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-            Console.ReadKey(true);
             return;
         }
 
-        // Rimuove utente dalla lista
-        MockDatabase.Users.Remove(user);
+        _context.Users.Remove(user);
+        _context.SaveChanges();
 
-        AnsiConsole.MarkupLine("[green]📕 Utente eliminato con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
-    }
-
-    private User GetUserData(User? existingUser = null)
-    {
-        string name = AnsiConsole.Ask<string>("Inserisci il nome dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.FirstName})[/]" : ""));
-        string lastName = AnsiConsole.Ask<string>("Inserisci il cognome dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.LastName})[/]" : ""));
-        DateTime birthDate = AnsiConsole.Ask<DateTime>("Inserisci la data di nascita dell'utente (YYYY-MM-DD):" + (existingUser != null ? $" [gray](attuale: {existingUser.BirthDate})[/]" : ""));
-        string taxCode = AnsiConsole.Ask<string>("Inserisci il codice fiscale dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.TaxCode})[/]" : ""));
-        string email;
-        while (true)
-        {
-            email = AnsiConsole.Ask<string>("Inserisci l'email dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.Email})[/]" : ""));
-
-            if (Regex.IsMatch(email, @"^[^\s@]+@[^\s@]+\.[^\s@]+$"))
-            {
-                break; // Email valida, esce dal ciclo
-            }
-
-            AnsiConsole.MarkupLine("[red]Formato email non valido. Riprova.[/]");
-        }
-        string phone = AnsiConsole.Ask<string>("Inserisci il numero di telefono dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.Phone})[/]" : ""));
-        string address = AnsiConsole.Ask<string>("Inserisci l'indirizzo dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.Address})[/]" : ""));
-        string city = AnsiConsole.Ask<string>("Inserisci la città dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.City})[/]" : ""));
-        string province = AnsiConsole.Ask<string>("Inserisci la provincia dell'utente:" + (existingUser != null ? $" [gray](attuale: {existingUser.Province})[/]" : ""));
-
-        var newUser = new User(
-            name,
-            lastName,
-            birthDate,
-            taxCode,
-            email,
-            phone,
-            address,
-            city,
-            province
-        );
-
-        return newUser;
+        AnsiConsole.MarkupLine("[green]🗑️ Utente eliminato con successo![/]");
+        Console.ReadKey();
     }
 }

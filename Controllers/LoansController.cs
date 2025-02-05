@@ -1,50 +1,54 @@
-﻿using Spectre.Console;
+﻿using BibliotecaLeader.Data;
 using BibliotecaLeader.Models;
+using Spectre.Console;
 
 namespace BibliotecaLeader.Controllers;
 
-internal class LoansController()
+public class LoansController
 {
-    internal void ViewLoans(string? filterType = null, string? filterValue = null)
+    private readonly BibliotecaContext _context;
+
+    public LoansController(BibliotecaContext context)
+    {
+        _context = context;
+    }
+
+    public void ViewLoans(string? filterType = null, string? filterValue = null)
     {
         var table = new Table();
         table.Border(TableBorder.Rounded);
         table.AddColumn("[yellow]ID[/]");
-        table.AddColumn("[yellow]ID Utente[/]");
         table.AddColumn("[yellow]Nome e Cognome[/]");
-        table.AddColumn("[yellow]ID Libro[/]");
-        table.AddColumn("[yellow]Titolo[/]");
-        table.AddColumn("[yellow]Data Inizio Prestito[/]");
-        table.AddColumn("[yellow]Deadline Fine Prestito[/]");
-        table.AddColumn("[yellow]Data Restituzione[/]");
+        table.AddColumn("[yellow]Titolo Libro[/]");
+        table.AddColumn("[yellow]Data Inizio[/]");
+        table.AddColumn("[yellow]Scadenza[/]");
+        table.AddColumn("[yellow]Restituzione[/]");
         table.AddColumn("[yellow]Penale[/]");
 
-        var loans = MockDatabase.Loans.OfType<Loan>();
+        var loans = _context.Loans.AsQueryable();
 
-        // Applica il filtro se presente
         if (!string.IsNullOrEmpty(filterType) && !string.IsNullOrEmpty(filterValue))
         {
             loans = filterType switch
             {
-                "UserId" => loans.Where(l => l.UserId == filterValue),
+                "UserId" => loans.Where(l => l.UserId.ToString() == filterValue),
                 "IsActive" => loans.Where(l => l.ReturnDate == null),
+                _ => loans
             };
         }
 
         foreach (var loan in loans)
         {
-            var user = MockDatabase.Users.FirstOrDefault(u => u.UserId == loan.UserId);
-            var userName = user != null ? $"{user.FirstName} {user.LastName}" : "[red]Utente non trovato[/]";
+            var user = _context.Users.Find(loan.UserId);
+            var book = _context.Books.Find(loan.BookId);
 
-            var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == loan.BookId);
+            var userName = user != null ? $"{user.FirstName} {user.LastName}" : "[red]Utente non trovato[/]";
             var bookTitle = book != null ? book.Title : "[red]Libro non trovato[/]";
 
             table.AddRow(
-                loan.LoanId,
-                loan.UserId,
+                loan.Id.ToString(),
                 userName,
-                loan.BookId,
-                bookTitle,  // Qui verrà stampato il titolo del libro
+                bookTitle,
                 loan.StartDate.ToString("dd/MM/yyyy"),
                 loan.EndDate.ToString("dd/MM/yyyy"),
                 loan.ReturnDate?.ToString("dd/MM/yyyy") ?? "[red]Non restituito[/]",
@@ -61,38 +65,33 @@ internal class LoansController()
             AnsiConsole.Write(table);
         }
 
-        AnsiConsole.MarkupLine("Premi un tasto per continuare.");
         Console.ReadKey();
     }
 
-    internal void NewLoan()
+    public void NewLoan()
     {
         var newLoan = GetLoanData();
-        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == newLoan.BookId);
+        if (newLoan == null) return;
 
-        if (book == null)
-        {
-            AnsiConsole.MarkupLine("[red]Libro non trovato![/]");
-            return;
-        }
-
-        if (book.Availability == 0)
+        var book = _context.Books.Find(newLoan.BookId);
+        if (book == null || book.Availability == 0)
         {
             AnsiConsole.MarkupLine("[red]Il libro non è disponibile per il prestito.[/]");
             return;
         }
 
         book.Availability--;
-        MockDatabase.Loans.Add(newLoan);
+        _context.Loans.Add(newLoan);
+        _context.SaveChanges();
+
         AnsiConsole.MarkupLine("[green]📘 Prestito aggiunto con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        Console.ReadKey();
     }
 
-    internal void EditLoan()
+    public void EditLoan()
     {
-        var loanId = AnsiConsole.Ask<string>("Inserisci l'ID del prestito da modificare:");
-        var loan = MockDatabase.Loans.FirstOrDefault(l => l.LoanId == loanId);
+        var loanId = AnsiConsole.Ask<int>("Inserisci l'ID del prestito da modificare:");
+        var loan = _context.Loans.Find(loanId);
 
         if (loan == null)
         {
@@ -101,18 +100,23 @@ internal class LoansController()
         }
 
         var updatedLoan = GetLoanData(loan);
-        updatedLoan.LoanId = loan.LoanId;
-        MockDatabase.Loans.Remove(loan);
-        MockDatabase.Loans.Add(updatedLoan);
+        if (updatedLoan == null) return;
+
+        loan.BookId = updatedLoan.BookId;
+        loan.UserId = updatedLoan.UserId;
+        loan.StartDate = updatedLoan.StartDate;
+        loan.EndDate = updatedLoan.EndDate;
+
+        _context.SaveChanges();
+
         AnsiConsole.MarkupLine("[green]✏️ Prestito modificato con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        Console.ReadKey();
     }
 
     public void EndLoan()
     {
-        var loanId = AnsiConsole.Ask<string>("Inserisci l'ID del prestito da terminare:");
-        var loan = MockDatabase.Loans.FirstOrDefault(l => l.LoanId == loanId);
+        var loanId = AnsiConsole.Ask<int>("Inserisci l'ID del prestito da chiudere:");
+        var loan = _context.Loans.Find(loanId);
 
         if (loan == null)
         {
@@ -120,8 +124,8 @@ internal class LoansController()
             return;
         }
 
-        var user = MockDatabase.Users.FirstOrDefault(u => u.UserId == loan.UserId);
-        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == loan.BookId);
+        var user = _context.Users.Find(loan.UserId);
+        var book = _context.Books.Find(loan.BookId);
 
         if (user == null || book == null)
         {
@@ -137,13 +141,10 @@ internal class LoansController()
             return;
         }
 
-        // Aggiorna la data di restituzione
         loan.ReturnDate = DateTime.Now;
-
-        // Calcola la penale se la restituzione è in ritardo
         if (loan.ReturnDate > loan.EndDate)
         {
-            var overdueDays = (loan.ReturnDate - loan.EndDate)?.Days ?? 0;
+            var overdueDays = (loan.ReturnDate - loan.EndDate).Value.Days;
             loan.Penalty = overdueDays * 2;
             AnsiConsole.MarkupLine($"[red]Il prestito è in ritardo di {overdueDays} giorni. Penale applicata: {loan.Penalty}€.[/]");
         }
@@ -152,19 +153,17 @@ internal class LoansController()
             loan.Penalty = 0;
         }
 
-        // Aumenta la disponibilità del libro
         book.Availability++;
+        _context.SaveChanges();
 
         AnsiConsole.MarkupLine("[green]✅ Restituzione completata con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        Console.ReadKey();
     }
 
-
-    internal void DeleteLoan()
+    public void DeleteLoan()
     {
-        var loanId = AnsiConsole.Ask<string>("Inserisci l'ID del prestito da eliminare:");
-        var loan = MockDatabase.Loans.FirstOrDefault(l => l.LoanId == loanId);
+        var loanId = AnsiConsole.Ask<int>("Inserisci l'ID del prestito da eliminare:");
+        var loan = _context.Loans.Find(loanId);
 
         if (loan == null)
         {
@@ -172,58 +171,47 @@ internal class LoansController()
             return;
         }
 
-        var user = MockDatabase.Users.FirstOrDefault(u => u.UserId == loan.UserId);
-        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == loan.BookId);
+        var user = _context.Users.Find(loan.UserId);
+        var book = _context.Books.Find(loan.BookId);
 
         if (user == null || book == null)
         {
-            AnsiConsole.MarkupLine("[red]Errore: utente o libro associato non trovati.[/]");
+            AnsiConsole.MarkupLine("[red]Errore: utente o libro non trovati.[/]");
             return;
         }
 
-        // Mostra dettagli del prestito e chiede conferma prima di eliminare
-        AnsiConsole.MarkupLine($"[yellow]Confermi l'eliminazione del prestito?[/]");
-        AnsiConsole.MarkupLine($"📚 [bold]Libro:[/] {book.Title}");
-        AnsiConsole.MarkupLine($"👤 [bold]Utente:[/] {user.FirstName} {user.LastName}");
-        AnsiConsole.MarkupLine($"📅 [bold]Data inizio:[/] {loan.StartDate:dd/MM/yyyy}");
-        AnsiConsole.MarkupLine($"📅 [bold]Scadenza:[/] {loan.EndDate:dd/MM/yyyy}");
-        AnsiConsole.MarkupLine($"📅 [bold]Restituzione:[/] {(loan.ReturnDate?.ToString("dd/MM/yyyy") ?? "[red]Non restituito[/]")}");
-
-        var confirmation = AnsiConsole.Confirm("[bold red]Sei sicuro di voler eliminare questo prestito?[/]");
-
-        if (!confirmation)
+        AnsiConsole.MarkupLine($"[yellow]Sei sicuro di voler eliminare il prestito del libro '{book.Title}' da parte di {user.FirstName} {user.LastName}? (S/N)[/]");
+        var confirmation = Console.ReadLine()?.Trim().ToLower();
+        if (confirmation != "s")
         {
             AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
             return;
         }
 
-        // Se il prestito non è stato restituito, aumenta la disponibilità del libro
         if (loan.ReturnDate == null)
         {
             book.Availability++;
-            AnsiConsole.MarkupLine($"[yellow]📖 La disponibilità del libro '{book.Title}' è stata aumentata a {book.Availability}.[/]");
         }
 
-        // Eliminazione del prestito dalla lista
-        MockDatabase.Loans.Remove(loan);
+        _context.Loans.Remove(loan);
+        _context.SaveChanges();
+
         AnsiConsole.MarkupLine("[green]🗑️ Prestito eliminato con successo![/]");
-        AnsiConsole.MarkupLine("[gray]Premi un tasto per continuare...[/]");
-        Console.ReadKey(true);
+        Console.ReadKey();
     }
 
-
-    private Loan GetLoanData(Loan? existingLoan = null)
+    private Loan? GetLoanData(Loan? existingLoan = null)
     {
-        var userId = AnsiConsole.Ask<string>("Inserisci l'ID dell'utente:" + (existingLoan != null ? $" [gray](attuale: {existingLoan.UserId})[/]" : ""));
-        var user = MockDatabase.Users.FirstOrDefault(u => u.UserId == userId);
+        var userId = AnsiConsole.Ask<int>("Inserisci l'ID dell'utente:");
+        var user = _context.Users.Find(userId);
         if (user == null)
         {
             AnsiConsole.MarkupLine("[red]Utente non trovato![/]");
             return null;
         }
 
-        var bookId = AnsiConsole.Ask<string>("Inserisci l'ID del libro:" + (existingLoan != null ? $" [gray](attuale: {existingLoan.BookId})[/]" : ""));
-        var book = MockDatabase.Books.FirstOrDefault(b => b.BookId == bookId);
+        var bookId = AnsiConsole.Ask<int>("Inserisci l'ID del libro:");
+        var book = _context.Books.Find(bookId);
         if (book == null)
         {
             AnsiConsole.MarkupLine("[red]Libro non trovato![/]");
@@ -241,6 +229,6 @@ internal class LoansController()
         var startDate = existingLoan?.StartDate ?? DateTime.Now;
         var endDate = existingLoan?.EndDate ?? startDate.AddDays(30);
 
-        return new Loan(bookId, userId, startDate, endDate);
+        return new Loan { BookId = bookId, UserId = userId, StartDate = startDate, EndDate = endDate };
     }
 }

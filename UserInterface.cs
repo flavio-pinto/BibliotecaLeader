@@ -1,14 +1,23 @@
 ﻿using Spectre.Console;
 using BibliotecaLeader.Controllers;
 using static BibliotecaLeader.Enums;
+using BibliotecaLeader.Data;
 
 namespace BibliotecaLeader;
 
 internal class UserInterface
 {
-    private readonly BooksController _booksController = new();
-    private readonly UsersController _usersController = new();
-    private readonly LoansController _loansController = new();
+    private readonly BooksController _booksController;
+    private readonly UsersController _usersController;
+    private readonly LoansController _loansController;
+
+    // Modificato per accettare il Database Context
+    public UserInterface(BibliotecaContext context)
+    {
+        _booksController = new BooksController(context);
+        _usersController = new UsersController(context);
+        _loansController = new LoansController(context);
+    }
 
     internal void MainMenu()
     {
