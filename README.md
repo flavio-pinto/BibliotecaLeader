@@ -1,76 +1,52 @@
-﻿# 📚 BibliotecaLeader (Aggiornato)
+﻿# 📖 BibliotecaLeader
 
-**BibliotecaLeader** è un'applicazione console scritta in **C# e .NET**, progettata per gestire una biblioteca, permettendo la gestione di **libri, utenti e prestiti**.  
-Utilizza **Entity Framework Core** per la gestione del database **SQL Server** e **Spectre.Console** per un'interfaccia CLI migliorata.
+**BibliotecaLeader** è un'applicazione console scritta in **C# e .NET**, progettata per gestire una biblioteca, permettendo la gestione di **libri, utenti e prestiti**. Utilizza la libreria **Spectre.Console** per un'interfaccia a riga di comando migliorata e **Entity Framework Core** per la gestione del database.
 
-💡 **Consiglio**: Per un'esperienza ottimale, utilizza il terminale a **schermo intero**.
+**Per un'esperienza di utilizzo migliore, suggerisco di utilizzare il terminale a schermo intero.**
+
+---
 
 ## ✨ Funzionalità Principali
 
 ### 📚 **Gestione Libri**
-✔ **Visualizza tutti i libri** con filtri per:  
-   - **Autore**  
-   - **Titolo**  
-   - **Anno di pubblicazione**  
-✔ **Aggiungi un nuovo libro**  
-✔ **Modifica un libro esistente**  
-✔ **Elimina un libro**  
+- **Visualizza libri** con possibilità di filtrarli per:
+  - **Autore**
+  - **Titolo**
+  - **Anno di pubblicazione**
+- **Aggiungi un nuovo libro**
+- **Modifica un libro esistente**
+- **Elimina un libro**
 
 ### 👥 **Gestione Utenti**
-✔ **Visualizza utenti** con filtri per:  
-   - **Nome e Cognome**  
-   - **Codice Fiscale**  
-   - **Email**  
-✔ **Aggiungi un nuovo utente**  
-✔ **Modifica i dati di un utente**  
-✔ **Elimina un utente**  
+- **Visualizza utenti** con filtri disponibili:
+  - **Nome e Cognome**
+  - **Codice Fiscale**
+  - **Email**
+- **Aggiungi un nuovo utente**
+- **Modifica i dati di un utente**
+- **Elimina un utente**
 
 ### 🔄 **Gestione Prestiti**
-✔ **Visualizza i prestiti attivi e passati**, con filtri per:  
-   - **ID utente**  
-   - **Prestiti attivi/non restituiti**  
-✔ **Aggiungi un nuovo prestito**, con verifica della disponibilità del libro  
-✔ **Modifica un prestito**  
-✔ **Termina un prestito**, con aggiornamento automatico di:  
-   - **Penale** (2€/giorno di ritardo)  
-   - **Disponibilità del libro**  
-✔ **Elimina un prestito**, con gestione automatica della disponibilità del libro  
+- **Visualizza prestiti attivi e passati**, con possibilità di filtrare per:
+  - **ID utente**
+  - **Prestiti attivi/non restituiti**
+- **Aggiungi un nuovo prestito**, con verifica della disponibilità del libro
+- **Modifica un prestito**
+- **Terminare un prestito**, con gestione automatica di:
+  - **Penale** (2€/giorno di ritardo)
+  - **Aggiornamento disponibilità del libro**
+- **Eliminare un prestito**, con controllo della disponibilità del libro
 
 ---
 
 ## 🛠️ Installazione
 
-### 📌 Prerequisiti
+### Prerequisiti
 - **.NET SDK 6.0 o superiore**
-- **Microsoft SQL Server** (installato e configurato)
-- **Visual Studio Code / Visual Studio** (opzionale)
+- **SQL Server** installato e configurato
+- **Visual Studio Code / Visual Studio / Rider** (opzionale per sviluppo)
 
-### 📌 Configurazione del Database
-1. **Crea il database SQL Server** con il nome `biblioteca_leader`.  
-   Se utilizzi SQL Server Management Studio (SSMS), esegui:
-   ```sql
-   CREATE DATABASE biblioteca_leader;
-   ```
-2. **Aggiorna la stringa di connessione** nel file `appsettings.json` (se lo utilizzi) o direttamente in `BibliotecaContext.cs`:
-   ```csharp
-   protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-   {
-       if (!optionsBuilder.IsConfigured)
-       {
-           optionsBuilder.UseSqlServer("Server=localhost;Database=biblioteca_leader;Trusted_Connection=True;TrustServerCertificate=True;");
-       }
-   }
-   ```
-
-3. **Esegui le migrazioni e aggiorna il database**:
-   ```sh
-   dotnet ef migrations add InitialCreate
-   dotnet ef database update
-   ```
-
----
-
-## 🚀 Avvio dell'Applicazione
+### Passaggi
 
 1. **Clona il repository**
    ```sh
@@ -83,7 +59,12 @@ Utilizza **Entity Framework Core** per la gestione del database **SQL Server** e
    dotnet restore
    ```
 
-3. **Avvia l'applicazione**
+3. **Applica le migrazioni al database**
+   ```sh
+   dotnet ef database update
+   ```
+
+4. **Avvia l'applicazione**
    ```sh
    dotnet run
    ```
@@ -108,32 +89,35 @@ BibliotecaLeader/
 │-- Program.cs
 │-- Enums.cs
 │-- README.md
+│-- appsettings.json
 ```
 
 - **Controllers/**: Gestisce la logica di business per libri, utenti e prestiti.
-- **Models/**: Contiene le classi rappresentative dei dati (**Libri, Utenti, Prestiti**).
-- **Data/**: Contiene il **DbContext**, che connette l'app al database SQL Server.
+- **Models/**: Contiene le classi rappresentative dei dati (Libri, Utenti, Prestiti).
+- **Data/**: Contiene il contesto di Entity Framework Core (`BibliotecaContext.cs`).
 - **UserInterface.cs**: Gestisce l'interazione con l'utente tramite menu testuali.
 - **Program.cs**: Punto di ingresso dell'applicazione.
 - **Enums.cs**: Definisce le enumerazioni per i menu.
+- **appsettings.json**: Contiene la configurazione dell'applicazione, inclusa la stringa di connessione al database.
 
 ---
 
-## ⌘ Utilizzo
+## ⌨️ Utilizzo
 
 1. **Avvia l'applicazione** con `dotnet run`
-2. **Naviga nei menu** usando le **frecce direzionali** e premi **Invio**
-3. **Esegui operazioni** su **libri, utenti e prestiti**
-4. **Per uscire**, seleziona "❌ Esci"
+2. **Naviga nei menu** utilizzando le frecce direzionali e premi `Invio`
+3. **Effettua operazioni** sui libri, utenti e prestiti
+4. **Per uscire**, seleziona l'opzione "❌ Esci"
 
 ---
 
 ## 🔧 Tecnologie Utilizzate
 
-- **C# e .NET 6**
-- **Entity Framework Core** (Gestione database SQL Server)
-- **Spectre.Console** (Interfaccia CLI avanzata)
+- **C#**
+- **.NET 6+**
 - **SQL Server**
+- **Entity Framework Core**
+- **Spectre.Console** (per un'interfaccia CLI avanzata)
 
 ---
 
