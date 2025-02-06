@@ -6,9 +6,9 @@ namespace BibliotecaLeader.Controllers;
 
 public class UsersController
 {
-    private readonly BibliotecaContext _context;
+    private readonly LibraryContext _context;
 
-    public UsersController(BibliotecaContext context)
+    public UsersController(LibraryContext context)
     {
         _context = context;
     }

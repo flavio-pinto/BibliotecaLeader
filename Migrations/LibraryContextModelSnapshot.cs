@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BibliotecaLeader.Migrations
 {
-    [DbContext(typeof(BibliotecaContext))]
-    partial class BibliotecaContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(LibraryContext))]
+    partial class LibraryContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

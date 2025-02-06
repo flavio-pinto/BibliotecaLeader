@@ -3,12 +3,12 @@ using BibliotecaLeader.Models;
 
 namespace BibliotecaLeader.Data
 {
-    public class BibliotecaContext : DbContext
+    public class LibraryContext : DbContext
     {
-        public BibliotecaContext(DbContextOptions<BibliotecaContext> options) : base(options) { }
+        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options) { }
 
         // Costruttore senza parametri per Entity Framework (necessario per le migrations)
-        public BibliotecaContext() { }
+        public LibraryContext() { }
 
         public DbSet<Book> Books { get; set; }
         public DbSet<User> Users { get; set; }

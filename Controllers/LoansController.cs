@@ -6,9 +6,9 @@ namespace BibliotecaLeader.Controllers;
 
 public class LoansController
 {
-    private readonly BibliotecaContext _context;
+    private readonly LibraryContext _context;
 
-    public LoansController(BibliotecaContext context)
+    public LoansController(LibraryContext context)
     {
         _context = context;
     }

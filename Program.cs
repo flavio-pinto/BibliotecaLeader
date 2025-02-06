@@ -5,12 +5,12 @@ using BibliotecaLeader.Data;
 using BibliotecaLeader.Controllers;
 
 var serviceProvider = new ServiceCollection()
-    .AddDbContext<BibliotecaContext>(options =>
+    .AddDbContext<LibraryContext>(options =>
         options.UseSqlServer("Server=localhost;Database=biblioteca_leader;Trusted_Connection=True;TrustServerCertificate=True;"))
     .BuildServiceProvider();
 
 using var scope = serviceProvider.CreateScope();
-var dbContext = scope.ServiceProvider.GetRequiredService<BibliotecaContext>();
+var dbContext = scope.ServiceProvider.GetRequiredService<LibraryContext>();
 
 // Applica eventuali migrazioni pendenti
 dbContext.Database.Migrate();
