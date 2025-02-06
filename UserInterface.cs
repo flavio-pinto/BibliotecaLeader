@@ -12,11 +12,11 @@ internal class UserInterface
     private readonly LoansController _loansController;
 
     // Modificato per accettare il Database Context
-    public UserInterface(BibliotecaContext context)
+    public UserInterface(BooksController booksController, UsersController usersController, LoansController loansController)
     {
-        _booksController = new BooksController(context);
-        _usersController = new UsersController(context);
-        _loansController = new LoansController(context);
+        _booksController = booksController;
+        _usersController = usersController;
+        _loansController = loansController;
     }
 
     internal void MainMenu()

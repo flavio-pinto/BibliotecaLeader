@@ -20,6 +20,6 @@ var booksController = new BooksController(dbContext);
 var usersController = new UsersController(dbContext);
 var loansController = new LoansController(dbContext);
 
-// Avvia l'interfaccia utente
-var userInterface = new UserInterface(dbContext);
+// Passa i controller già creati a UserInterface
+var userInterface = new UserInterface(booksController, usersController, loansController);
 userInterface.MainMenu();
