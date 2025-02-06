@@ -103,6 +103,7 @@ public class BooksController
         if (book == null)
         {
             AnsiConsole.MarkupLine("[red]Libro non trovato![/]");
+            Console.ReadKey();
             return;
         }
 
@@ -130,6 +131,7 @@ public class BooksController
         if (book == null)
         {
             AnsiConsole.MarkupLine("[red]Libro non trovato![/]");
+            Console.ReadKey();
             return;
         }
 

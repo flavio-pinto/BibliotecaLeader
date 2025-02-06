@@ -104,6 +104,7 @@ public class UsersController
         if (user == null)
         {
             AnsiConsole.MarkupLine("[red]Utente non trovato![/]");
+            Console.ReadKey();
             return;
         }
 
@@ -131,6 +132,7 @@ public class UsersController
         if (user == null)
         {
             AnsiConsole.MarkupLine("[red]Utente non trovato![/]");
+            Console.ReadKey();
             return;
         }
 

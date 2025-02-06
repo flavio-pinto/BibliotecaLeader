@@ -96,6 +96,7 @@ public class LoansController
         if (loan == null)
         {
             AnsiConsole.MarkupLine("[red]Prestito non trovato![/]");
+            Console.ReadKey();
             return;
         }
 
@@ -121,6 +122,7 @@ public class LoansController
         if (loan == null)
         {
             AnsiConsole.MarkupLine("[red]Prestito non trovato![/]");
+            Console.ReadKey();
             return;
         }
 
@@ -130,6 +132,7 @@ public class LoansController
         if (user == null || book == null)
         {
             AnsiConsole.MarkupLine("[red]Errore: utente o libro non trovati.[/]");
+            Console.ReadKey();
             return;
         }
 
@@ -138,6 +141,7 @@ public class LoansController
         if (confirmation != "s")
         {
             AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
+            Console.ReadKey();
             return;
         }
 
@@ -168,6 +172,7 @@ public class LoansController
         if (loan == null)
         {
             AnsiConsole.MarkupLine("[red]Prestito non trovato![/]");
+            Console.ReadKey();
             return;
         }
 
@@ -177,6 +182,7 @@ public class LoansController
         if (user == null || book == null)
         {
             AnsiConsole.MarkupLine("[red]Errore: utente o libro non trovati.[/]");
+            Console.ReadKey();
             return;
         }
 
@@ -185,6 +191,7 @@ public class LoansController
         if (confirmation != "s")
         {
             AnsiConsole.MarkupLine("[yellow]Operazione annullata.[/]");
+            Console.ReadKey();
             return;
         }
 
@@ -207,6 +214,7 @@ public class LoansController
         if (user == null)
         {
             AnsiConsole.MarkupLine("[red]Utente non trovato![/]");
+            Console.ReadKey();
             return null;
         }
 
@@ -215,6 +223,7 @@ public class LoansController
         if (book == null)
         {
             AnsiConsole.MarkupLine("[red]Libro non trovato![/]");
+            Console.ReadKey();
             return null;
         }
 
